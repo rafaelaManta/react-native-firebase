@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "765007520161",
+    "project_id": "fcm-demo-dccfb",
+    "storage_bucket": "fcm-demo-dccfb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765007520161:android:6532124e7b1f3e8b39abe0",
+        "android_client_info": {
+          "package_name": "com.fcm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh9_yzQlvsE8xMTzFr8hAWNcHccLKa8t4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
