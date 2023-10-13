@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { Platform, PermissionsAndroid } from 'react-native'
+import { Platform, PermissionsAndroid, Alert } from 'react-native'
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 
@@ -53,6 +53,29 @@ const useFcm = () => {
     return fcmToken
 }
 
+const useBadgeNumber = () => {
+    const [badgeNumber, setBadgeNumber] = useState(0)
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const notifeeBadge = await notifee.getBadgeCount()
+                console.log({ notifeeBadge })
+                setBadgeNumber(notifeeBadge)
+            } catch (error) {
+                console.log('Failed to return badge number')
+            }
+        })()
+    }, [])
+    return badgeNumber
+}
+
+
+const handleNotifications = (remoteMessage) => {
+    const { title, body } = remoteMessage
+    Alert.alert(title, body)
+}
+
 const onDisplayNotification = async (remoteMessage) => {
     //required for iOS
     await notifee.requestPermission()
@@ -72,23 +95,16 @@ const onDisplayNotification = async (remoteMessage) => {
             // pressAction is needed if you want 
             //the notification to open the app when pressed
             pressAction: {
-                id: 'default',
+                id: 'mark-as-read',
             },
         },
-    });
-}
-
-//Foreground Event
-const fcmOnMessage = () => {
-    messaging().onMessage(async remoteMessage => {
-        console.log('A new FCM message arrived!', remoteMessage);
-        onDisplayNotification(remoteMessage?.notification)
     });
 }
 
 
 export {
     useFcm,
-    fcmOnMessage,
-
+    useBadgeNumber,
+    onDisplayNotification,
+    handleNotifications
 }

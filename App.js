@@ -15,17 +15,30 @@ import {
   View,
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import notifee, { EventType } from '@notifee/react-native';
 
 
-import { useFcm, fcmOnMessage, } from './services/FcmNotifications';
+import {
+  useFcm,
+  useBadgeNumber,
+  onDisplayNotification,
+  handleNotifications
+} from './services/FcmNotifications';
 
 
 const App = () => {
   const fcmToken = useFcm()
+  const badgeNumber = useBadgeNumber()
 
+  console.log({ badgeNumber })
 
   useEffect(() => {
-    const unsubscribeFcmOnMessage = fcmOnMessage()
+
+    // foreground event
+    const unsubscribeFcmOnMessage = messaging().onMessage(async remoteMessage => {
+      console.log('A new FCM message arrived!', remoteMessage);
+      onDisplayNotification(remoteMessage?.notification)
+    });
 
     //background event
     messaging().onNotificationOpenedApp(remoteMessage => {
@@ -33,7 +46,7 @@ const App = () => {
         'Notification caused app to open from background state:',
         remoteMessage.notification,
       );
-
+      handleNotifications(remoteMessage.notification)
     });
 
     //quite event
@@ -45,12 +58,31 @@ const App = () => {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
+          handleNotifications(remoteMessage.notification)
+
         }
       });
 
-    return unsubscribeFcmOnMessage;
+    return unsubscribeFcmOnMessage
 
   }, [])
+
+
+  useEffect(() => {
+    // foreground event
+    const unsubscribeNotifee = notifee.onForegroundEvent(async ({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        await notifee.cancelNotification(detail.notification.id);
+        handleNotifications(detail.notification)
+      }
+    })
+    return () => {
+      unsubscribeNotifee()
+    }
+  }, [])
+
+
+
 
   return (
     <SafeAreaView>

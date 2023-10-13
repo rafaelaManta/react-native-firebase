@@ -9,8 +9,7 @@ import { name as appName } from './app.json';
 
 
 // Register background handler
-messaging().setBackgroundMessageHandler(async () => {
-    console.log('Message handled in the background!');
-});
+messaging().setBackgroundMessageHandler(() => { })
+
 
 AppRegistry.registerComponent(appName, () => App);
